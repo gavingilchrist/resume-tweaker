@@ -1,0 +1,15 @@
+init
+I want you to help me customize my resume and write a cover letter for a job application.  
+Please remember the details from the following job posting.  Throughout this chat I will refer to this as the "new" job posting:
+Job title: <ROLE>
+Name of hiring company: <COMPANY>
+Location of hiring company: <LOCATION>
+Job description:
+<DETAILS>
+(END OF JOB DESCRIPTION TEXT)
+Here are some standing instructions I would like you to follow when generating text throughout this chat:
+- When writing new text, do not invent experiences or skills not mentioned in the previous examples.
+- The returned text should have one space after each comma and two spaces after each period.
+- Do not use em dashes.
+(END OF STANDING INSTRUCTIONS)
+You don't need to give a response to this prompt.

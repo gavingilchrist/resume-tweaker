@@ -1,0 +1,22 @@
+Partnered with KSS Retail to implement automated price optimization capabilities using customer behavior, price elasticity, competitive benchmarks, and business constraints."
+Partnered with pricing specialists to implement predictive pricing optimization models that balanced customer responsiveness, competitive positioning, and business objectives.
+Partnered with KSS Retail to implement automated price optimization, setting category prices to maximize customer engagement while accounting for price elasticity, competitive benchmarks and business constraints.
+Partnered with KSS Retail to implement automated price optimization capabilities, leveraging customer behavior, price elasticity, competitive benchmarks, and business constraints to support pricing decisions.
+-----
+Developed enterprise KPI reporting framework enabling business leaders to monitor performance, investigate underlying drivers of sales trends, and take targeted actions where needed."
+Developed KPI reporting and decision-support framework enabling stakeholders to diagnose drivers of year-over-year sales trends - e.g. changes in pricing, visit frequency, etc. - and take targeted actions where needed.
+Developed KPI reporting and analytical frameworks enabling stakeholders to identify underlying drivers of sales performance, including pricing, customer visits, transaction behavior, and customer growth.
+Built interactive KPI reporting capabilities allowing stakeholders to drill into sales performance and understand underlying drivers across multiple dimensions.
+Developed KPI reporting solutions that enabled stakeholders to drill into year-over-year sales performance and identify underlying business drivers, including pricing, customer visits, transaction behavior, and customer growth.
+Developed KPI reporting solutions that enabled stakeholders to identify the underlying drivers of business performance and perform root cause analysis across multiple dimensions.
+-----
+Created dashboards and reporting tools summarizing the impact of promotional and merchandising activity, providing category managers with actionable insights to improve future performance."
+Designed dashboards and executive reporting solutions that improved visibility into promotional performance and enabled category managers to identify improvement opportunities.
+Created dashboards and measurement solutions summarizing the impact of promotional and merchandising activity, providing actionable insights to category managers and business leaders.
+Developed executive dashboards measuring promotional effectiveness and customer response, enabling marketing and merchandising teams to optimize future campaigns.
+Developed executive dashboards to summarize the impact of Kroger product promotions and related merchandising, providing category managers with metrics and insights enabling them to adjust and refine future promotional activity.
+Developed executive dashboards summarizing promotional performance and merchandising effectiveness, enabling more informed decision making on future tactics.
+-----
+Delivered analytical insights supporting assortment optimization using customer loyalty, product substitutability, and brand engagement metrics."
+Delivered analytical insights to support assortment decisions, using customer loyalty, product substitutability, and brand engagement metrics to prioritize products for retention or removal.
+Delivered insights and metrics to inform product assortment decisions, using metrics such as customer loyalty, product substitutability and brand engagement to prioritize products to be retained or delisted.
