@@ -1,4 +1,3 @@
-init
 I want you to help me customize my resume and write a cover letter for a job application.  
 Please remember the details from the following job posting.  Throughout this chat I will refer to this as the "new" job posting:
 Job title: <ROLE>
@@ -9,6 +8,7 @@ Job description:
 (END OF JOB DESCRIPTION TEXT)
 Here are some standing instructions I would like you to follow when generating text throughout this chat:
 - When writing new text, do not invent experiences or skills not mentioned in the previous examples.
+- When a task calls for a paragraph of text to be generated, the new paragraph should not be substantially longer or shorter than the previous examples provided for that task.
 - The returned text should have one space after each comma and two spaces after each period.
 - Do not use em dashes.
 (END OF STANDING INSTRUCTIONS)

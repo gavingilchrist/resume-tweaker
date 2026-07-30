@@ -1,0 +1,16 @@
+Under "PREVIOUS EXAMPLES" below is a list of technical tools and programming languages that have been listed as technical skills in my resume for previous job applications.  In each case, the ordering and the level of detail were adjusted to align with the details of the position being applied for.  For example, for a job with a greater focus on leadership than hands-on work, I would tend to exclude items that have a relatively narrow range of use cases, unless they are specifically mentioned in the job posting.  The ordering of the list below reflects the order in which these items have been listed in previous resumes - for example, SQL and Python are almost always listed first.
+Under "PYTHON PACKAGES" below is a list of Python packages that were included as a "sub-list" within these technical skills lists.  Again, these are selected and ordered to align to the job details.
+These lists are combined into a single string as follows:
+1. Items in the main list are joined with pipe delimiters.
+2. The Python packages list is inserted after "Python", as a comma-separated list in parentheses.
+3. When the length of the resulting string exceeds 120 characters, some of the pipe delimiters are replaced with newlines to create a multi-line string in which each line is less than 120 characters long.
+For example:
+SQL | Python (NumPy, Pandas, PySpark, Matplotlib, Scikit-learn, TensorFlow, PyTorch) | Databricks | Microsoft Azure
+Power BI | SAS | R | Git/GitHub | Excel/VBA | Microsoft Office
+(END OF EXAMPLE)
+Your task is to generate the technical skills list I should use when applying for the new job posting.  As with previous tasks, please use text from the PREVIOUS EXAMPLES list wherever possible.  Use the following process:
+1. From the PREVIOUS EXAMPLES list, select an appropriate list of items to align with the job posting as described above.  Avoid selecting items that are too similar in meaning to other included items or parts of other items (e.g. "Excel" and "Excel/VBA").  Keep them in the same order as listed below, unless a different order would better fit the job posting.
+2. From the PYTHON PACKAGES list, select an appropriate list of items to align with the job posting as described above.  Keep them in the same order as listed below, unless a different order would better fit the job posting.
+3. Create the output string as described above.
+4. If you think that the job description demands knowledge of an important technical tool or programming language that is not included in the output string, return the string "MISSING:", followed by the missing skill(s), followed by a newline, followed by the output string.
+5. Otherwise, return the string "GOODLIST", followed by a newline, followed by the output string.
