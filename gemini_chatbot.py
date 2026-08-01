@@ -5,17 +5,17 @@ from google.api_core import retry
 
 
 class ChatBot(object):
-    def __init__(self, initial_prompt, model="gemini-3.5-flash"):
+    def __init__(self, 
+                 prompt_intro: str, 
+                 model: str = "gemini-3.1-pro-preview") -> None:
         """
         Define model and reset chat history
         """
         self.create_genai_client()
         self.gen_config = genai.types.GenerateContentConfig(temperature=0.6,
                                                             top_p=0.95)
-        self.conversation = self.client.chats.create(model=model,
-                                                     config=self.gen_config,
-                                                     history=[])
-        self.send(initial_prompt)
+        self.prompt_intro = prompt_intro
+        self.model = model
         
     def create_genai_client(self):
         """
@@ -31,8 +31,15 @@ class ChatBot(object):
         )(genai.models.Models.generate_content)
         self.client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
         
-    def send(self, prompt):
+    def send(self, 
+             prompt: str,
+             add_intro: bool = True) -> str:
         """
         Submit prompt, update chat history, return response
         """
-        return self.conversation.send_message(prompt).text
+        if add_intro:
+            prompt = self.prompt_intro + prompt
+        response = self.client.models.generate_content(model=self.model, 
+                                                       config=self.gen_config, 
+                                                       contents=prompt)
+        return response.text

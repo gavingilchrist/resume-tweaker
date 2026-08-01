@@ -188,19 +188,37 @@ def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, 
     Separate out feedback on how much new text was composed by AI from llm_outputs dict
     """
     llm_outputs = {}
-    llm_report = ''
-    for n,k in enumerate(raw_llm_outputs):
-        llm_report += f"{'\n' if n else ''}{k}\n"
-        if k in ['r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b']:
-            gentxt=[i for i in raw_llm_outputs[k].split('\n') if i]
-            llm_report += ''.join([f"{' '*8}Bullet {i}: {j}\n"
-                                   for i,j in enumerate(gentxt[::2], 1)])
-            llm_outputs[k] = gentxt[1::2]
-        else:
-            fb, *llm_outputs[k] = raw_llm_outputs[k].split('\n')
-            llm_report += f"{' '*8}{fb}\n"
+    llm_report = {}
+    for n,key in enumerate(raw_llm_outputs):
+        if key in ['r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b']:
+            gentxt = [([j.strip() for j in i.split('\n')]+[*'XX'])[:3]
+                      for i in raw_llm_outputs[key].split('\n\n')]
+            brpt, btxt, brnk = [*zip(*gentxt)]
             
-    return llm_outputs, llm_report
+            bullets_hist = [[v for v in g.split('\n')] 
+                            for g in open(f'input/bullets_{key}.txt', 'r')
+                                          .read().strip().split('\n\n')]
+            bh_chg = False
+            for bn in range(len(bullets_hist)):
+                if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:
+                    bullets_hist[bn] += [btxt[bn]]
+                    bh_chg = True
+            if bh_chg:
+                with open(f'input/bullets_{key}.txt', 'w') as f:
+                    f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
+                    
+            llm_report[key] = ''.join([f"{' '*8}Bullet {i}: {j}\n" 
+                                       for i,j in sorted(zip(brnk, brpt)) 
+                                       if i != 'X'])
+            llm_outputs[key] = [j 
+                                for i,j in sorted(zip(brnk, btxt)) 
+                                if i != 'X']
+        else:
+            fb, *llm_outputs[key] = raw_llm_outputs[key].split('\n')
+            llm_report[key] = f"{' '*8}{fb}\n"
+    llm_report_txt = '\n'.join([f"{k}\n{v}" for k,v in llm_report.items()])
+            
+    return llm_outputs, llm_report_txt
 
 
 def make_doc(label: str, 
@@ -252,4 +270,4 @@ def save_to_folder(job_details: Dict[str, str],
         
     return [{**job_details,
              "resume_path": resume_path,
-             "coverletter_path": coverletter_path}]
+             "cover_path": coverletter_path}]

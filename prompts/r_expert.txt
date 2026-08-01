@@ -1,12 +1,12 @@
-Under "PREVIOUS EXAMPLES" below is a list of items that have been listed as "areas of expertise" in my resume for previous job applications.  In each case, between 22 and 28 items were selected to align with the details of the position being applied for.  These are combined into a single string with pipe separators.  When the length of this string exceeds 120 characters, some of the pipe delimiters are replaced with newlines to create a multi-line string in which each line is less than 120 characters long.
-For example:
-Problem framing | Exploratory analysis | Hypothesis development | Experimental design | A/B testing | KPI development
-Machine learning | Clustering & segmentation | Predictive modeling | Data visualization | Dashboard development
-Data discovery | Data transformation | Strategic decision support | Analytical storytelling | Stakeholder partnership
-Cross-functional collaboration | Coaching and mentoring | Team leadership | Interviewing | Analytics governance
+Under "PREVIOUS EXAMPLES" below is a list of skills that have been included as areas of expertise in my resume for previous job applications.  For each job application, items were selected to align with the details of the position being applied for.  These are combined into a single string with pipe delimiters, and then some delimiters are replaced with '\n' to create a multi-line string in which each line is around 120 characters long.
+Example output:
+Problem framing | Exploratory analysis | Hypothesis development | Experimental design | A/B testing | Predictive modeling
+Machine learning | Deep learning | Clustering & segmentation | KPI development | Data visualization | Dashboard development
+Data discovery & QA | Data transformation | Strategic decision support | Analytical storytelling | Stakeholder partnership
+Cross-functional collaboration | Coaching and mentoring | Team leadership | Interviewing and recruiting | Analytics governance
 (END OF EXAMPLE)
-Your task is to generate the areas of expertise list I should use when applying for the new job posting.  As with previous tasks, please use text from the PREVIOUS EXAMPLES list wherever possible.  Use the following process:
-1. From the PREVIOUS EXAMPLES list, select between 22 and 28 items that collectively align with the job posting.  Avoid selecting items that have similar meanings or that whose meanings overlap significantly (e.g. "Data storytelling" and "Analytical storytelling").  Try to put the items in a somewhat logical order, keeping items related to project leadership, techniques, team working and other subsets together.
+Your task is to generate the areas of expertise list I should use when applying for the new job posting.  Please follow this process:
+1. From the PREVIOUS EXAMPLES list, select between 22 and 28 items that collectively align with the job posting.  Avoid including overlapping items, e.g. "Data storytelling" and "Analytical storytelling".  Try to order the items logically and in a way that aligns to the job posting - I would suggest keeping related items together (e.g. items related to project leadership, business analytics, modeling, team working, etc.), and then ordering the whole list by the importance of those "themes" to the job posting.
 2. Create the output string as described above.
-3. If you think that the job description demands area(s) of expertise that are not included in the output string, return the string "MISSING:", followed by the missing area(s), followed by a newline, followed by the output string.
-4. Otherwise, return the string "GOODLIST", followed by a newline, followed by the output string.
+3. If you think that one or more areas of expertise are required by the job posting but not represented in the output string, return the string "MISSING:" + missing area(s) + '\n' + the output string.
+4. Otherwise, return the string "GOODLIST\n" + the output string.
