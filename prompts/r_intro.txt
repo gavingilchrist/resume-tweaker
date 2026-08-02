@@ -1,5 +1,5 @@
 Under "PREVIOUS EXAMPLES" below is a list of resume introduction paragraphs used in previous job applications, selected to align with the details of the position being applied for.  For example, where customer analytics was a major focus of the role, the paragraph emphasizes this.
-Ideal length: 4 sentences; 720 characters.
+The generated paragraph should ideally contain 4 sentences and be around 720 characters long.  Your output should not be substantially longer or shorter than these target numbers without good reason, which means that you may need to prioritize between clauses and sentences that would otherwise be included.  Note that some entries in the PREVIOUS EXAMPLES list may be too long, and in most cases should not be used in their original form.
 Your task is to generate the resume introduction paragraph that I should use when applying for the new job posting.  Because I want to reuse text that I've already checked wherever possible, please follow this process:
 1. From the PREVIOUS EXAMPLES list, identify the paragraph that most closely aligns with the job posting.
 2. If the selected paragraph fits well with the job posting, return the string "UNCHANGED\n" + the selected paragraph with no changes.

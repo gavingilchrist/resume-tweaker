@@ -93,9 +93,45 @@ def past_example_components(past_examples: List[Dict[str, str]]) -> List[Dict[st
             'c_p3': cover_text[s: (s:=s+1)], 
             'c_p4': cover_text[s: (s:=s+1)], 
         }]
-    return [{k: [normalize_text(l) for l in e[k]] 
-             for k in e} 
-            for e in doc_components]
+    doc_components = [{k: [normalize_text(l) for l in e[k] if l] 
+                       for k in e} 
+                      for e in doc_components]
+    fix_bullet_lists(doc_components)
+    
+    return doc_components
+
+
+def fix_bullet_lists(doc_components):
+    """
+    Some far-from-ideal code that identifies instances where some of the bullets in the
+    last-produced resume/cover letter were manually updated, and adds the updated text
+    to the input/bullets_....txt files.
+    """
+    for key in ('r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b'):
+        bullets_hist = [[v.strip() for v in g.split('\n')] 
+                        for g in open(f'input/bullets_{key}.txt', 'r')
+                                     .read().split('\n\n')]
+        b_matched = [False for i in bullets_hist]
+        edited = []
+        for b in doc_components[-1][key]:
+            bs = b.replace('[B]','')    
+            if any(z:=[bs in i for i in bullets_hist]):
+                b_matched[z.index(True)] = True
+            else:
+                edited += [bs]
+        if edited:
+            bh_match = [[i, {w.strip('.,').lower()
+                             for k in bullets_hist[i] 
+                             for w in k.split()}] 
+                        for i,j in enumerate(b_matched) if not j]
+            for e in edited:
+                ix = sorted([[sum(z:=[w.strip('.,').lower() in j 
+                                      for w in e.split()])/len(z), 
+                              i]
+                             for i,j in bh_match])[-1][1]
+                bullets_hist[ix] += [e]
+            with open(f'input/bullets_{key}.txt', 'w') as f:
+                f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
 
 
 def get_job_details() -> Dict[str, str]:
@@ -195,9 +231,9 @@ def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, 
                       for i in raw_llm_outputs[key].split('\n\n')]
             brpt, btxt, brnk = [*zip(*gentxt)]
             
-            bullets_hist = [[v for v in g.split('\n')] 
+            bullets_hist = [[v.strip() for v in g.split('\n')] 
                             for g in open(f'input/bullets_{key}.txt', 'r')
-                                          .read().strip().split('\n\n')]
+                                          .read().split('\n\n')]
             bh_chg = False
             for bn in range(len(bullets_hist)):
                 if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:

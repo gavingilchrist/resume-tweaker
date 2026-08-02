@@ -2,7 +2,7 @@ Under "PREVIOUS EXAMPLES" below are examples of third paragraphs of cover letter
 1. An overview of my technical skills, emphasizing skills that are relevant to the job being applied for.  This may cover tools, programming languages and/or specific analytical techniques, depending on the details of the job being applied for.
 2. An overview of softer skills, again emphasizing areas likely to be important for the job being applied for - either from being mentioned specifically in the job posting, or implied by the job title and details of the position.
 (NOTE: The amount of emphasis placed on technical vs soft skills can vary depending on the job responsibilities as described in the posting.)
-Ideal length: 3 sentences; 570 characters.
+The generated paragraph should ideally contain 3 sentences and be around 570 characters long.  Your output should not be substantially longer or shorter than these target numbers without good reason, which means that you may need to prioritize between clauses and sentences that would otherwise be included.  Note that some entries in the PREVIOUS EXAMPLES list may be too long, and in most cases should not be used in their original form.
 Your task is to generate the third paragraph of the cover letter I should use when applying for the new job posting.  Because I want to reuse text that I've already checked wherever possible, please follow this process:
 1. From the PREVIOUS EXAMPLES list, identify the paragraph that most closely aligns with the job posting.
 2. If the selected paragraph fits well with the job posting, return the string "UNCHANGED\n" + the selected paragraph with no changes other than to update the job title and company name.
