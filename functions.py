@@ -138,7 +138,7 @@ def get_job_details() -> Dict[str, str]:
     """
     Gather job posting details from user inputs, clean and return as dict.
     """
-    company_input = title_input = loc_input = details_input = None
+    company_input = title_input = loc_input = details_input = comments_input = ''
     while not title_input:
         title_input = input('Enter job title')
     while not company_input:
@@ -148,12 +148,20 @@ def get_job_details() -> Dict[str, str]:
     while not details_input:
         details_input = input('Enter job description')
         
+    comments_input = input('Enter special comments')
+    if comments_input:
+        comments_input = ("Here are some additional comments, describing points that I think "
+                          + "may be worth emphasizing when generating your response\n"
+                          + normalize_text(comments_input)
+                          + "\n(END OF COMMENTS)\n")
+        
     return {
         "role": normalize_text(title_input),
         "company": normalize_text(company_input),
         "location": normalize_text(loc_input),
         "apply_date": datetime.today().strftime("%m%d%Y"),
         "job_posting": normalize_text(details_input),
+        "comments": comments_input,
         }
 
 

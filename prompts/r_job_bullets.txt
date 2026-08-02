@@ -5,4 +5,4 @@ Your task is to generate the version of this list of achievements I should use w
 (a) Select the version of the description from the PREVIOUS EXAMPLES list that most closely aligns with the job posting.
 (b) If the version you selected seems appropriate for the job posting, return the string "UNCHANGED\n" + the selected description with no changes + '\n' + the ranking number for that achievement.
 (c) Otherwise, create a description that includes newly generated text where needed, still using components from PREVIOUS EXAMPLES as much as possible.  DO NOT add embellishments that are not directly supported by material in PREVIOUS EXAMPLES, and keep the length of the new text consistent with PREVIOUS EXAMPLES.  Return the string "REWRITTEN\n" + the description you created + '\n' + the ranking number for that achievement.
-When finished, you should have generated one description for each group of descriptions in the PREVIOUS EXAMPLES list.
+When finished, you should have generated output for each achievement represented by a group of descriptions in the PREVIOUS EXAMPLES list.  Please insert '\n\n' between each of these outputs.
