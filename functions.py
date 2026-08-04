@@ -6,6 +6,7 @@ import numpy as np
 from datetime import datetime
 from copy import deepcopy
 import os
+import shutil
 
 
 def load_json(path: str) -> List[Dict[str, str]]:
@@ -108,17 +109,28 @@ def fix_bullet_lists(doc_components):
     to the input/bullets_....txt files.
     """
     for key in ('r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b'):
+        # Read in file with previously-used text for bullet points
         bullets_hist = [[v.strip() for v in g.split('\n')] 
                         for g in open(f'input/bullets_{key}.txt', 'r')
                                      .read().split('\n\n')]
+        
+        # Remove any that were never used (replaced by manual edits)        
+        b_used = {b.replace('[B]','') for e in doc_components for b in e[key]}
+        bullets_hist = [[b for b in g if b in b_used] for g in bullets_hist]
+        
+        # Identify bullets in last-produced document that don't match to bullets_hist
+        # (i.e. results of manual edits)
         b_matched = [False for i in bullets_hist]
         edited = []
         for b in doc_components[-1][key]:
-            bs = b.replace('[B]','')    
+            bs = b.replace('[B]','')
             if any(z:=[bs in i for i in bullets_hist]):
                 b_matched[z.index(True)] = True
             else:
                 edited += [bs]
+                
+        # Add each manually-edited bullet to the correct group
+        # (using quick-and-dirty matching method - % of words matched to group)
         if edited:
             bh_match = [[i, {w.strip('.,').lower()
                              for k in bullets_hist[i] 
@@ -130,15 +142,17 @@ def fix_bullet_lists(doc_components):
                               i]
                              for i,j in bh_match])[-1][1]
                 bullets_hist[ix] += [e]
-            with open(f'input/bullets_{key}.txt', 'w') as f:
-                f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
+                
+        # Save updated bullets data
+        with open(f'input/bullets_{key}.txt', 'w') as f:
+            f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
 
 
 def get_job_details() -> Dict[str, str]:
     """
     Gather job posting details from user inputs, clean and return as dict.
     """
-    company_input = title_input = loc_input = details_input = comments_input = ''
+    title_input = company_input = loc_input = details_input = comments_input = ''
     while not title_input:
         title_input = input('Enter job title')
     while not company_input:
@@ -157,7 +171,7 @@ def get_job_details() -> Dict[str, str]:
         
     return {
         "role": normalize_text(title_input),
-        "company": normalize_text(company_input),
+        "company": normalize_text(company_input).strip('.'),
         "location": normalize_text(loc_input),
         "apply_date": datetime.today().strftime("%m%d%Y"),
         "job_posting": normalize_text(details_input),
@@ -239,17 +253,17 @@ def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, 
                       for i in raw_llm_outputs[key].split('\n\n')]
             brpt, btxt, brnk = [*zip(*gentxt)]
             
-            bullets_hist = [[v.strip() for v in g.split('\n')] 
-                            for g in open(f'input/bullets_{key}.txt', 'r')
-                                          .read().split('\n\n')]
-            bh_chg = False
-            for bn in range(len(bullets_hist)):
-                if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:
-                    bullets_hist[bn] += [btxt[bn]]
-                    bh_chg = True
-            if bh_chg:
-                with open(f'input/bullets_{key}.txt', 'w') as f:
-                    f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
+            # bullets_hist = [[v.strip() for v in g.split('\n')] 
+            #                 for g in open(f'input/bullets_{key}.txt', 'r')
+            #                               .read().split('\n\n')]
+            # bh_chg = False
+            # for bn in range(len(bullets_hist)):
+            #     if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:
+            #         bullets_hist[bn] += [btxt[bn]]
+            #         bh_chg = True
+            # if bh_chg:
+            #     with open(f'input/bullets_{key}.txt', 'w') as f:
+            #         f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
                     
             llm_report[key] = ''.join([f"{' '*8}Bullet {i}: {j}\n" 
                                        for i,j in sorted(zip(brnk, brpt)) 
@@ -302,12 +316,19 @@ def save_to_folder(job_details: Dict[str, str],
                             job_details['company'])
     if not os.path.exists(savepath):
         os.makedirs(savepath)
+        
+    tmp_path = os.path.join(savepath, 'temp.docx')
+    
+    resume.save(tmp_path)
     resume_path = os.path.join(savepath, 
                                f"Gilchrist_Gavin_Resume_{job_details['apply_date']}.docx")
-    resume.save(resume_path)
+    shutil.move(tmp_path, resume_path)
+    
+    coverletter.save(tmp_path)
     coverletter_path = os.path.join(savepath, 
                                     f"Gilchrist_Gavin_CoverLetter_{job_details['apply_date']}.docx")
-    coverletter.save(coverletter_path)
+    shutil.move(tmp_path, coverletter_path)
+    
     with open(os.path.join(savepath, 
                            f"LLM_Report_{job_details['apply_date']}.txt"), 'w') as f:
         f.write(llm_report)
