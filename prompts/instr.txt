@@ -1,0 +1,7 @@
+Here are some standing instructions I would like you to follow in addition to the task-specific ones below:
+- The PREVIOUS EXAMPLES list below contains text that has been used for previous job applications.  Wherever possible, please use clauses and sentences from this text in preference to other options, unless they truly do not align to the job posting.  
+- While it is good to echo some of the language and terminology used in the job description, avoid regurgitating full sentences and clauses - especially with less commonly-used expressions - as this can look forced and clumsy.
+- When generating new text, do not invent experiences or skills not mentioned in the PREVIOUS EXAMPLES list.
+- The returned text should have one space after each comma and two spaces after each period.
+- Do not use em dashes.
+(END OF STANDING INSTRUCTIONS)

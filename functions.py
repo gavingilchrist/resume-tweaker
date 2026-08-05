@@ -1,12 +1,12 @@
 import json
 import docx
-from typing import List, Dict, Optional, Tuple
 import pandas as pd
 import numpy as np
 from datetime import datetime
 from copy import deepcopy
 import os
 import shutil
+from typing import List, Dict, Optional, Tuple
 
 
 def load_json(path: str) -> List[Dict[str, str]]:
@@ -24,42 +24,6 @@ def save_json(path: str,
     """
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-
-
-def get_doc_text(path: str) -> List[str]:
-    """
-    Extract text from document at path.
-    """
-    return [['','[B]'][any([j in p.paragraph_format.element.xml
-                            for j in ['<w:numPr>', 'w:val="ListBullet"']])]
-            + p.text
-            for p in docx.Document(path).paragraphs]
-
-
-def get_line_index(findtxt: str, 
-                   intxt: str) -> int:
-    """
-    Return line number within findtxt that begins with intxt.
-    """
-    return (z[0] if (z:=[i for i,j in enumerate(intxt) 
-                         if j.upper().startswith(findtxt.upper())]) 
-            else -1)
-
-
-def normalize_text(text: str) -> str:
-    """
-    Normalize text by replacing special characters and trimming whitespace.
-    """
-    if text is None:
-        return ""
-    repl_map = [("\u201c", '"'), 
-                ("\u201d", '"'), 
-                ("\u2018", "'"), 
-                ("\u2019", "'"), 
-                ("\u2013", "-"), 
-                ("\u2014", "-")]
-    return [(z:=(z if i else text).replace(j,k)) 
-            for i,(j,k) in enumerate(repl_map)][-1].strip()
 
 
 def past_example_components(past_examples: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -100,6 +64,42 @@ def past_example_components(past_examples: List[Dict[str, str]]) -> List[Dict[st
     fix_bullet_lists(doc_components)
     
     return doc_components
+
+
+def get_doc_text(path: str) -> List[str]:
+    """
+    Extract text from document at path.
+    """
+    return [['','[B]'][any([j in p.paragraph_format.element.xml
+                            for j in ['<w:numPr>', 'w:val="ListBullet"']])]
+            + p.text
+            for p in docx.Document(path).paragraphs]
+
+
+def get_line_index(findtxt: str, 
+                   intxt: str) -> int:
+    """
+    Return line number within findtxt that begins with intxt.
+    """
+    return (z[0] if (z:=[i for i,j in enumerate(intxt) 
+                         if j.upper().startswith(findtxt.upper())]) 
+            else -1)
+
+
+def normalize_text(text: str) -> str:
+    """
+    Normalize text by replacing special characters and trimming whitespace.
+    """
+    if text is None:
+        return ""
+    repl_map = [("\u201c", '"'), 
+                ("\u201d", '"'), 
+                ("\u2018", "'"), 
+                ("\u2019", "'"), 
+                ("\u2013", "-"), 
+                ("\u2014", "-")]
+    return [(z:=(z if i else text).replace(j,k)) 
+            for i,(j,k) in enumerate(repl_map)][-1].strip()
 
 
 def fix_bullet_lists(doc_components):
@@ -152,55 +152,61 @@ def get_job_details() -> Dict[str, str]:
     """
     Gather job posting details from user inputs, clean and return as dict.
     """
-    title_input = company_input = loc_input = details_input = comments_input = ''
+    title_input = company_input = loc_input = job_desc_input = comments_input = ''
     while not title_input:
         title_input = input('Enter job title')
     while not company_input:
         company_input = input('Enter name of hiring company')
     while not loc_input:
         loc_input = input('Enter location of hiring company')
-    while not details_input:
-        details_input = input('Enter job description')
-        
+    while not job_desc_input:
+        job_desc_input = input('Enter job description')
     comments_input = input('Enter special comments')
-    if comments_input:
-        comments_input = ("Here are some additional comments, describing points that I think "
-                          + "may be worth emphasizing when generating your response\n"
-                          + normalize_text(comments_input)
-                          + "\n(END OF COMMENTS)\n")
         
     return {
         "role": normalize_text(title_input),
         "company": normalize_text(company_input).strip('.'),
         "location": normalize_text(loc_input),
         "apply_date": datetime.today().strftime("%m%d%Y"),
-        "job_posting": normalize_text(details_input),
-        "comments": comments_input,
+        "job_desc": normalize_text(job_desc_input),
+        "comments": normalize_text(comments_input),
         }
 
 
-def get_prompts() -> Dict[str, str]:
+def get_prompts(job_details: Dict[str, str]) -> Dict[str, str]:
     """
-    Read in prompt templates from .txt files and return in dict
+    Read in prompt templates from .txt files, replace placeholder strings from 
+    job_details and return in dict.
     """
-    return {f.replace('.txt',''): open(f'prompts/{f}', 'r').read()
-            for f in os.listdir('prompts')}
+    raw_prompts = {f.replace('.txt',''): open(f'prompts/{f}', 'r').read()
+                   for f in os.listdir('prompts')}
+    return {pk: [(z:=(z if n else raw_prompts[pk]).replace(f"<{k.upper()}>", v))
+                 for n,(k,v) in enumerate(job_details.items())][-1]
+            for pk in raw_prompts}
 
 
-def proper(text: str) -> str:
+def get_full_prompt(key: str,
+                    prompts: Dict[str, str],
+                    doc_components: List[Dict[str, str]]) -> str:
     """
-    Apply sentence case to string, but preserve acronyms as all-caps.
+    Assemble and return the full LLM prompt for the specified key.
     """
-    f,t = 0,1
-    while f<len(text):
-        while t<len(text) and (65<=ord(text[t])<=90 or 97<=ord(text[t])<=122):
-            t+=1
-        if text[f:t]!=text[f:t].upper():
-            text = (text[:f]
-                    +(text[f:t].lower() if f else text[f:t].capitalize())
-                    +text[t:])
-        t = (f:=t+1)+1
-    return text
+    pplan = [(True, 
+              prompts.get('init')),
+             (key in ['r_title', 'r_intro', 'c_p1', 'c_p4'], 
+              prompts.get('comments')), 
+             (True, 
+              prompts.get('instr')),
+             (key in ['r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk'],
+              prompts.get('r_job_bullets'),
+              prompts.get(key)),
+             (True, 
+              '\nPREVIOUS EXAMPLES:'),
+             (True, 
+              get_source_examples(doc_components, key))]
+    return '\n'.join([[k[2],k[1]][k[0]].rstrip() 
+                      for i in pplan 
+                      for k in [[j for j in [*i,''][:3]]]])
 
 
 def get_source_examples(doc_components: List[Dict[str, str]], 
@@ -241,6 +247,22 @@ def get_source_examples(doc_components: List[Dict[str, str]],
         return '\n\n'.join([e[key][0] for e in doc_components])
 
 
+def proper(text: str) -> str:
+    """
+    Apply sentence case to string, but preserve acronyms as all-caps.
+    """
+    f,t = 0,1
+    while f<len(text):
+        while t<len(text) and (65<=ord(text[t])<=90 or 97<=ord(text[t])<=122):
+            t+=1
+        if text[f:t]!=text[f:t].upper():
+            text = (text[:f]
+                    +(text[f:t].lower() if f else text[f:t].capitalize())
+                    +text[t:])
+        t = (f:=t+1)+1
+    return text
+
+
 def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, List[str]], str]:
     """
     Separate out feedback on how much new text was composed by AI from llm_outputs dict
@@ -253,17 +275,17 @@ def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, 
                       for i in raw_llm_outputs[key].split('\n\n')]
             brpt, btxt, brnk = [*zip(*gentxt)]
             
-            # bullets_hist = [[v.strip() for v in g.split('\n')] 
-            #                 for g in open(f'input/bullets_{key}.txt', 'r')
-            #                               .read().split('\n\n')]
-            # bh_chg = False
-            # for bn in range(len(bullets_hist)):
-            #     if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:
-            #         bullets_hist[bn] += [btxt[bn]]
-            #         bh_chg = True
-            # if bh_chg:
-            #     with open(f'input/bullets_{key}.txt', 'w') as f:
-            #         f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
+            bullets_hist = [[v.strip() for v in g.split('\n')] 
+                            for g in open(f'input/bullets_{key}.txt', 'r')
+                                          .read().split('\n\n')]
+            bh_chg = False
+            for bn in range(len(bullets_hist)):
+                if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:
+                    bullets_hist[bn] += [btxt[bn]]
+                    bh_chg = True
+            if bh_chg:
+                with open(f'input/bullets_{key}.txt', 'w') as f:
+                    f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
                     
             llm_report[key] = ''.join([f"{' '*8}Bullet {i}: {j}\n" 
                                        for i,j in sorted(zip(brnk, brpt)) 
