@@ -8,7 +8,7 @@ class ChatBot(object):
     def __init__(self,
                  model: str = "gemini-3.1-pro-preview") -> None:
         """
-        Define model and reset chat history
+        Define model
         """
         self.create_genai_client()
         self.gen_config = genai.types.GenerateContentConfig(temperature=0.6,

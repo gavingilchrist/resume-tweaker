@@ -7,6 +7,7 @@ from copy import deepcopy
 import os
 import shutil
 from typing import List, Dict, Optional, Tuple
+from .examples_subset_semantic import examples_subset
 
 
 def load_json(path: str) -> List[Dict[str, str]]:
@@ -244,7 +245,7 @@ def get_source_examples(doc_components: List[Dict[str, str]],
                                  for l in open(f'input/bullets_{key}.txt', 'r')
                                               .read().strip().split('\n\n')])
     else:
-        return '\n\n'.join([e[key][0] for e in doc_components])
+        return '\n\n'.join(examples_subset(doc_components, key))
 
 
 def proper(text: str) -> str:
