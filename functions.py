@@ -7,7 +7,7 @@ from copy import deepcopy
 import os
 import shutil
 from typing import List, Dict, Optional, Tuple
-from .examples_subset_semantic import examples_subset
+from examples_subset_semantic import examples_subset
 
 
 def load_json(path: str) -> List[Dict[str, str]]:
@@ -62,7 +62,7 @@ def past_example_components(past_examples: List[Dict[str, str]]) -> List[Dict[st
     doc_components = [{k: [normalize_text(l) for l in e[k] if l] 
                        for k in e} 
                       for e in doc_components]
-    fix_bullet_lists(doc_components)
+    # fix_bullet_lists(doc_components)
     
     return doc_components
 
@@ -103,50 +103,50 @@ def normalize_text(text: str) -> str:
             for i,(j,k) in enumerate(repl_map)][-1].strip()
 
 
-def fix_bullet_lists(doc_components):
-    """
-    Some far-from-ideal code that identifies instances where some of the bullets in the
-    last-produced resume/cover letter were manually updated, and adds the updated text
-    to the input/bullets_....txt files.
-    """
-    for key in ('r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b'):
-        # Read in file with previously-used text for bullet points
-        bullets_hist = [[v.strip() for v in g.split('\n')] 
-                        for g in open(f'input/bullets_{key}.txt', 'r')
-                                     .read().split('\n\n')]
+# def fix_bullet_lists(doc_components):
+#     """
+#     Some far-from-ideal code that identifies instances where some of the bullets in the
+#     last-produced resume/cover letter were manually updated, and adds the updated text
+#     to the input/bullets_....txt files.
+#     """
+#     for key in ('r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b'):
+#         # Read in file with previously-used text for bullet points
+#         bullets_hist = [[v.strip() for v in g.split('\n')] 
+#                         for g in open(f'input/bullets_{key}.txt', 'r')
+#                                      .read().split('\n\n')]
         
-        # Remove any that were never used (replaced by manual edits)        
-        b_used = {b.replace('[B]','') for e in doc_components for b in e[key]}
-        bullets_hist = [[b for b in g if b in b_used] for g in bullets_hist]
+#         # Remove any that were never used (replaced by manual edits)        
+#         b_used = {b.replace('[B]','') for e in doc_components for b in e[key]}
+#         bullets_hist = [[b for b in g if b in b_used] for g in bullets_hist]
         
-        # Identify bullets in last-produced document that don't match to bullets_hist
-        # (i.e. results of manual edits)
-        b_matched = [False for i in bullets_hist]
-        edited = []
-        for b in doc_components[-1][key]:
-            bs = b.replace('[B]','')
-            if any(z:=[bs in i for i in bullets_hist]):
-                b_matched[z.index(True)] = True
-            else:
-                edited += [bs]
+#         # Identify bullets in last-produced document that don't match to bullets_hist
+#         # (i.e. results of manual edits)
+#         b_matched = [False for i in bullets_hist]
+#         edited = []
+#         for b in doc_components[-1][key]:
+#             bs = b.replace('[B]','')
+#             if any(z:=[bs in i for i in bullets_hist]):
+#                 b_matched[z.index(True)] = True
+#             else:
+#                 edited += [bs]
                 
-        # Add each manually-edited bullet to the correct group
-        # (using quick-and-dirty matching method - % of words matched to group)
-        if edited:
-            bh_match = [[i, {w.strip('.,').lower()
-                             for k in bullets_hist[i] 
-                             for w in k.split()}] 
-                        for i,j in enumerate(b_matched) if not j]
-            for e in edited:
-                ix = sorted([[sum(z:=[w.strip('.,').lower() in j 
-                                      for w in e.split()])/len(z), 
-                              i]
-                             for i,j in bh_match])[-1][1]
-                bullets_hist[ix] += [e]
+#         # Add each manually-edited bullet to the correct group
+#         # (using quick-and-dirty matching method - % of words matched to group)
+#         if edited:
+#             bh_match = [[i, {w.strip('.,').lower()
+#                              for k in bullets_hist[i] 
+#                              for w in k.split()}] 
+#                         for i,j in enumerate(b_matched) if not j]
+#             for e in edited:
+#                 ix = sorted([[sum(z:=[w.strip('.,').lower() in j 
+#                                       for w in e.split()])/len(z), 
+#                               i]
+#                              for i,j in bh_match])[-1][1]
+#                 bullets_hist[ix] += [e]
                 
-        # Save updated bullets data
-        with open(f'input/bullets_{key}.txt', 'w') as f:
-            f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
+#         # Save updated bullets data
+#         with open(f'input/bullets_{key}.txt', 'w') as f:
+#             f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
 
 
 def get_job_details() -> Dict[str, str]:
@@ -241,9 +241,9 @@ def get_source_examples(doc_components: List[Dict[str, str]],
                                      .sort_values(by='skrank').index.tolist())
         return source_examples
     elif key in ('r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b'):
-        return '\n-----\n'.join([l 
-                                 for l in open(f'input/bullets_{key}.txt', 'r')
-                                              .read().strip().split('\n\n')])
+        return '\n'.join([l 
+                          for l in open(f'input/bullets_{key}.txt', 'r')
+                                       .read().strip().split('\n\n')])
     else:
         return '\n\n'.join(examples_subset(doc_components, key))
 
@@ -276,17 +276,17 @@ def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, 
                       for i in raw_llm_outputs[key].split('\n\n')]
             brpt, btxt, brnk = [*zip(*gentxt)]
             
-            bullets_hist = [[v.strip() for v in g.split('\n')] 
-                            for g in open(f'input/bullets_{key}.txt', 'r')
-                                          .read().split('\n\n')]
-            bh_chg = False
-            for bn in range(len(bullets_hist)):
-                if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:
-                    bullets_hist[bn] += [btxt[bn]]
-                    bh_chg = True
-            if bh_chg:
-                with open(f'input/bullets_{key}.txt', 'w') as f:
-                    f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
+            # bullets_hist = [[v.strip() for v in g.split('\n')] 
+            #                 for g in open(f'input/bullets_{key}.txt', 'r')
+            #                               .read().split('\n\n')]
+            # bh_chg = False
+            # for bn in range(len(bullets_hist)):
+            #     if btxt[bn] != 'X' and btxt[bn] not in bullets_hist[bn]:
+            #         bullets_hist[bn] += [btxt[bn]]
+            #         bh_chg = True
+            # if bh_chg:
+            #     with open(f'input/bullets_{key}.txt', 'w') as f:
+            #         f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
                     
             llm_report[key] = ''.join([f"{' '*8}Bullet {i}: {j}\n" 
                                        for i,j in sorted(zip(brnk, brpt)) 
