@@ -1,7 +1,6 @@
 Under "PREVIOUS EXAMPLES" below is a list of technical tools and programming languages that have been included in the main list of technical skills in my resume for previous job applications.
 Under "PYTHON PACKAGES" below is a list of Python packages that have been, included as a sub-list in previous job applications.
 For each job application, the ordering and the level of detail were adjusted to align with the details of the position being applied for.  For example, for a job with a greater focus on leadership than hands-on work, I might exclude some of the "niche" items that are neither mentioned nor implied in the job posting.
-
 These lists are combined into a single string as follows:
 1. Items in the main list are joined with pipe delimiters.
 2. The Python packages list is inserted after "Python", as a comma-separated list in parentheses.
@@ -10,7 +9,7 @@ Example output:
 SQL | Python (NumPy, Pandas, PySpark, Matplotlib, Scikit-learn, TensorFlow, PyTorch) | Databricks | Microsoft Azure
 Power BI | SAS | R | Git/GitHub | Excel/VBA | Microsoft Office
 (END OF EXAMPLE)
-Your task is to generate the technical skills list I should use when applying for the new job posting.  Please follow this process:
+Your task is to generate the technical skills list I should use when applying for the target job.  Please follow this process:
 1. From the PREVIOUS EXAMPLES list, select an appropriate list of items to align with the job posting as described above.  Avoid including overlapping items, e.g. don't include both "Excel" and "Excel/VBA".  Keep them in the same order as listed below, unless you see a specific reason in the job posting to change it, e.g. if knowledge of SAS is a core requirement, SAS should be listed earlier.
 2. Repeat step 1 with the PYTHON PACKAGES list.
 3. Create the output string as described above.

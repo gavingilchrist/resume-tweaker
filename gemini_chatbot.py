@@ -15,7 +15,7 @@ class ChatBot(object):
                                                             top_p=0.95)
         self.model = model
         
-    def create_genai_client(self):
+    def create_genai_client(self) -> None:
         """
         Set up access to Google Gen AI models.
         """

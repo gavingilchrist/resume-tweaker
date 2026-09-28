@@ -1,12 +1,16 @@
-Under "PREVIOUS EXAMPLES" below is a list of skills that have been included as areas of expertise in my resume for previous job applications.  For each job application, items were selected to align with the details of the position being applied for.  These are combined into a single string with pipe delimiters, and then some delimiters are replaced with '\n' to create a multi-line string in which each line is around 120 characters long.
+Under "PREVIOUS EXAMPLES" below is a list of skills available to be included as areas of expertise in my resume.  For each job application I select a subset of these items to align with the details of the position being applied for.  These items are also ordered to align with the job details, but to avoid the list becoming too disorganized this is done using a specific method.  The PREVIOUS EXAMPLES list is arranged into broadly-related subgroups, e.g. skills related to consulting are grouped separately from those related to analytical methodology.  Items within each subgroup should be grouped together in the final list.  A possible process to achieve this is:
+1. Determine the importance of each subgroup in terms of relevance to the job description.
+2. For each subgroup starting with the most relevant, select items to include in the final list.  Avoid including overlapping items, e.g. "Data storytelling" and "Analytical storytelling".  You can also combine items with an ampersand, e.g. "Data quality" and "Data cleansing" could be combined into "Data quality & cleansing" - but only do this in limited cases where the items being combined are closely related.
+3. Aim to select between 22 and 28 items that collectively align with the job posting, with an appropriate mix of items from different subgroups.
+The list is combined into a single string with pipe delimiters, and then selected delimiters are replaced with '\n' to create a multi-line string in which each line is around 120 characters long.
 Example output:
-Problem framing | Exploratory analysis | Hypothesis development | Experimental design | A/B testing | Predictive modeling
-Machine learning | Deep learning | Clustering & segmentation | KPI development | Data visualization | Dashboard development
-Data discovery & QA | Data transformation | Strategic decision support | Analytical storytelling | Stakeholder partnership
-Cross-functional collaboration | Coaching and mentoring | Team leadership | Interviewing and recruiting | Analytics governance
+Problem framing | Hypothesis development | Strategic decision support | Stakeholder partnership | Analytical storytelling
+Data visualization | Experimental design | A/B testing | Predictive modeling | Machine learning | KPI development
+Deep learning | Clustering | Customer segmentation | Marketing analytics | Dashboard development | Self-service analytics
+Data pipelines | Exploratory analysis | Data discovery | Data quality & cleansing | Data transformation | Team leadership
+Cross-functional collaboration | Analytics governance | Mentoring | Interviewing 
 (END OF EXAMPLE)
-Your task is to generate the areas of expertise list I should use when applying for the new job posting.  Please follow this process:
-1. From the PREVIOUS EXAMPLES list, select between 22 and 28 items that collectively align with the job posting.  Avoid including overlapping items, e.g. "Data storytelling" and "Analytical storytelling".  Try to order the items logically and in a way that aligns to the job posting - I would suggest keeping related items together (e.g. items related to project leadership, business analytics, modeling, team working, etc.), and then ordering the whole list by the importance of those "themes" to the job posting.
-2. Create the output string as described above.
-3. If you think that one or more areas of expertise are required by the job posting but not represented in the output string, return the string "MISSING:" + missing area(s) + '\n' + the output string.
-4. Otherwise, return the string "GOODLIST\n" + the output string.
+Your task is to generate the areas of expertise list I should use when applying for the target job.  Please follow this process:
+1. Create the text string using the process described above.
+2. If there are any areas of expertise that seem vitally important to the target job based on the posting that are not represented in the output string, return the string "MISSING:" + missing area(s) + '\n' + the output string.
+3. Otherwise, return the string "GOODLIST\n" + the output string.

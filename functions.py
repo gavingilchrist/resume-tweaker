@@ -6,11 +6,10 @@ from datetime import datetime
 from copy import deepcopy
 import os
 import shutil
-from typing import List, Dict, Optional, Tuple
 from examples_subset_semantic import examples_subset
 
 
-def load_json(path: str) -> List[Dict[str, str]]:
+def load_json(path: str) -> list[dict[str, str | list[str]]]:
     """
     Load JSON file, return data as list of dicts.
     """
@@ -19,7 +18,7 @@ def load_json(path: str) -> List[Dict[str, str]]:
 
 
 def save_json(path: str,
-              data: List[Dict[str, str]]) -> None:
+              data: list[dict[str, str]]) -> None:
     """
     Save list of dicts to JSON file.
     """
@@ -27,7 +26,7 @@ def save_json(path: str,
         json.dump(data, f, indent=2)
 
 
-def past_example_components(past_examples: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def past_example_components(past_examples: list[dict[str, str]]) -> list[dict[str, str]]:
     """
     Get details of past applications from JSON file, read 
     """
@@ -67,7 +66,7 @@ def past_example_components(past_examples: List[Dict[str, str]]) -> List[Dict[st
     return doc_components
 
 
-def get_doc_text(path: str) -> List[str]:
+def get_doc_text(path: str) -> list[str]:
     """
     Extract text from document at path.
     """
@@ -149,7 +148,7 @@ def normalize_text(text: str) -> str:
 #             f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
 
 
-def get_job_details() -> Dict[str, str]:
+def get_job_details() -> dict[str, str]:
     """
     Gather job posting details from user inputs, clean and return as dict.
     """
@@ -174,7 +173,7 @@ def get_job_details() -> Dict[str, str]:
         }
 
 
-def get_prompts(job_details: Dict[str, str]) -> Dict[str, str]:
+def get_prompts(job_details: dict[str, str]) -> dict[str, str]:
     """
     Read in prompt templates from .txt files, replace placeholder strings from 
     job_details and return in dict.
@@ -187,8 +186,8 @@ def get_prompts(job_details: Dict[str, str]) -> Dict[str, str]:
 
 
 def get_full_prompt(key: str,
-                    prompts: Dict[str, str],
-                    doc_components: List[Dict[str, str]]) -> str:
+                    prompts: dict[str, str],
+                    doc_components: list[dict[str, str]]) -> str:
     """
     Assemble and return the full LLM prompt for the specified key.
     """
@@ -210,7 +209,7 @@ def get_full_prompt(key: str,
                       for k in [[j for j in [*i,''][:3]]]])
 
 
-def get_source_examples(doc_components: List[Dict[str, str]], 
+def get_source_examples(doc_components: list[dict[str, str]], 
                         key: str) -> str:
     """
     Extract text for source material examples for component of resume/cover letter
@@ -219,8 +218,8 @@ def get_source_examples(doc_components: List[Dict[str, str]],
         return '\n'.join({i.upper() 
                           for i in sum([e[key] 
                                         for e in doc_components],[])})
-    elif key in ('r_hl_skills', 'r_expert'):
-        return '\n'.join({proper(s.strip())
+    elif key in ('r_hl_skills'):
+        return '\n'.join({s.strip()
                           for e in doc_components
                           for s in '|'.join(e[key]).split('|')})
     elif key in ('r_tech'):
@@ -240,6 +239,12 @@ def get_source_examples(doc_components: List[Dict[str, str]],
                                      .groupby('pyskill').mean()
                                      .sort_values(by='skrank').index.tolist())
         return source_examples
+    elif key in ('r_expert'):
+        return '\n\n'.join([f"{i['group'].upper()}:\n{'\n'.join(i['items'])}" 
+                            for i in load_json('input/expertise.json')])
+        # To check order of outputs in main.ipynb
+        # d={k:i for i,j in enumerate(load_json('input/expertise.json')) for k in j['items']}
+        # [[(z:=i.split('&')[0].strip()),d[z]] for i in ' | '.join(llm_outputs['r_expert']).split(' | ')]
     elif key in ('r_effo', 'r_dusa_vp', 'r_dusa_dir', 'r_dusa_sa', 'r_duk', 'c_p2b'):
         return '\n'.join([l 
                           for l in open(f'input/bullets_{key}.txt', 'r')
@@ -248,23 +253,23 @@ def get_source_examples(doc_components: List[Dict[str, str]],
         return '\n\n'.join(examples_subset(doc_components, key))
 
 
-def proper(text: str) -> str:
-    """
-    Apply sentence case to string, but preserve acronyms as all-caps.
-    """
-    f,t = 0,1
-    while f<len(text):
-        while t<len(text) and (65<=ord(text[t])<=90 or 97<=ord(text[t])<=122):
-            t+=1
-        if text[f:t]!=text[f:t].upper():
-            text = (text[:f]
-                    +(text[f:t].lower() if f else text[f:t].capitalize())
-                    +text[t:])
-        t = (f:=t+1)+1
-    return text
+# def proper(text: str) -> str:
+#     """
+#     Apply sentence case to string, but preserve acronyms as all-caps.
+#     """
+#     f,t = 0,1
+#     while f<len(text):
+#         while t<len(text) and (65<=ord(text[t])<=90 or 97<=ord(text[t])<=122):
+#             t+=1
+#         if text[f:t]!=text[f:t].upper():
+#             text = (text[:f]
+#                     +(text[f:t].lower() if f else text[f:t].capitalize())
+#                     +text[t:])
+#         t = (f:=t+1)+1
+#     return text
 
 
-def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, List[str]], str]:
+def split_llm_outputs(raw_llm_outputs: dict[str, list[str]]) -> tuple[dict[str, list[str]], str]:
     """
     Separate out feedback on how much new text was composed by AI from llm_outputs dict
     """
@@ -288,7 +293,7 @@ def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, 
             #     with open(f'input/bullets_{key}.txt', 'w') as f:
             #         f.write('\n\n'.join(['\n'.join(g) for g in bullets_hist]))
                     
-            llm_report[key] = ''.join([f"{' '*8}Bullet {i}: {j}\n" 
+            llm_report[key] = ''.join([f"\u2022 Bullet {i}: {j}\n" 
                                        for i,j in sorted(zip(brnk, brpt)) 
                                        if i != 'X'])
             llm_outputs[key] = [j 
@@ -296,15 +301,15 @@ def split_llm_outputs(raw_llm_outputs: Dict[str, List[str]]) -> Tuple[Dict[str, 
                                 if i != 'X']
         else:
             fb, *llm_outputs[key] = raw_llm_outputs[key].split('\n')
-            llm_report[key] = f"{' '*8}{fb}\n"
+            llm_report[key] = f"\u2022 {fb}\n"
     llm_report_txt = '\n'.join([f"{k}\n{v}" for k,v in llm_report.items()])
             
     return llm_outputs, llm_report_txt
 
 
 def make_doc(label: str, 
-             job_details: Dict[str, str], 
-             llm_outputs: Dict[str, List[str]]) -> docx.document.Document:
+             job_details: dict[str, str], 
+             llm_outputs: dict[str, list[str]]) -> docx.document.Document:
     """
     Populate customized text into document template
     """
@@ -327,10 +332,10 @@ def make_doc(label: str,
     return doc
 
 
-def save_to_folder(job_details: Dict[str, str], 
+def save_to_folder(job_details: dict[str, str], 
                    resume: docx.document.Document, 
                    coverletter: docx.document.Document, 
-                   llm_report: str) -> List[Dict[str, str]]:
+                   llm_report: str) -> list[dict[str, str]]:
     """
     Write generated resume and cover letter to Documents/Job Search folder, with AI report.
     Also return new entry at add to past examples json.

@@ -1,5 +1,5 @@
 You are helping me to prepare a customized resume and cover letter for a job application.  This is one task in a multi-step process.
-These are the details of the job to which I'm applying (referred to as the "new" job posting):
+These are the details of the job to which I'm applying (referred to as the target job):
 Job title: <ROLE>
 Name of hiring company: <COMPANY>
 Location of hiring company: <LOCATION>

@@ -1,15 +1,14 @@
 from sentence_transformers import SentenceTransformer
 import numpy as np
-from typing import List, Dict, Optional, Tuple
 
 
 MODEL = SentenceTransformer('all-MiniLM-L6-v2')
 
 
-def examples_subset(doc_components: List[Dict[str, str]],
+def examples_subset(doc_components: list[dict[str, str]],
                     key: str,
                     min_examples: int = 5,
-                    max_score: float = 0.7) -> List[str]:
+                    max_score: float = 0.7) -> list[str]:
     """
     Trim list of example paragraphs by removing ones that are similar to others.
     (Semantic method with HF SentenceTransformer)

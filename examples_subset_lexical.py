@@ -1,12 +1,11 @@
 from difflib import SequenceMatcher
 import numpy as np
-from typing import List, Dict, Optional, Tuple
 
 
-def examples_subset(doc_components: List[Dict[str, str]],
+def examples_subset(doc_components: list[dict[str, str]],
                     key: str,
                     min_examples: int = 5,
-                    max_score: float = 0.5) -> List[str]:
+                    max_score: float = 0.5) -> list[str]:
     """
     Trim list of example paragraphs by removing ones that are similar to others.
     (Lexical method with difflib.SequenceMatcher)
